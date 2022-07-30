@@ -7,10 +7,9 @@ import FileUploadList from './Components/FileUploadList';
 function App() {
     const [uploads, setUploads] = useState<File[]>([] as File[]);
     const [files, setFiles] = useState<IFile[]>([] as IFile[]);
-    const [formDataList, setFormDataList] = useState<FormData[]>([] as FormData[]);
 
     useEffect(() => {
-        const fileArray = [] as IFile[];
+        const _files = [] as IFile[];
         uploads.forEach(f => {
             const file = {
                 name: f.name,
@@ -18,19 +17,9 @@ function App() {
                 type: f.type,
                 url: URL.createObjectURL(f)
             } as IFile;
-            fileArray.push(file);
+            _files.push(file);
         });
-        setFiles(fileArray);
-
-        const formDataArray = [] as FormData[];
-        uploads.forEach(element => {
-            const formData = new FormData();
-            formData.append('file', element);
-            formData.append('fileName', element.name);
-            formData.append('fileType', element.type);
-            formDataArray.push(formData);
-        });
-        setFormDataList(formDataArray);
+        setFiles(_files);
     }, [uploads]);
 
     const deleteFile = (fileName: string) => {
@@ -40,7 +29,18 @@ function App() {
     const onSave = () => {
         console.log(uploads);
         console.log(files);
-        console.log(formDataList);
+
+        // Add multiple files to FormData
+        const formData = new FormData();
+        uploads.forEach(file => {
+            formData.append('files', file);
+        });
+
+        // Add extra property/properties to the FormData
+        formData.append('id', '123');
+        console.log(formData);
+
+        // TODO: Call a API and send post FormData
     };
 
     const AcceptMaxFileSizeInMB = 100;
